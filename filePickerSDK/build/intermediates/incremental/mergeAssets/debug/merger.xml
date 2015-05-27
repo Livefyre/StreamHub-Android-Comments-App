@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/kvanadev5/Developer/android/livefyre-comments-spike/StreamHub-Android-Comments-App/filePickerSDK/src/main/assets"/></dataSet><dataSet config="debug"><source path="/Users/kvanadev5/Developer/android/livefyre-comments-spike/StreamHub-Android-Comments-App/filePickerSDK/src/debug/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/kvanadev5/Documents/Developer/StreamHub-Android-Comments-App/filePickerSDK/src/main/assets"/></dataSet><dataSet config="debug"><source path="/Users/kvanadev5/Documents/Developer/StreamHub-Android-Comments-App/filePickerSDK/src/debug/assets"/></dataSet></merger>

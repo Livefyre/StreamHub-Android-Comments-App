@@ -42,7 +42,7 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     protected void showAlert(String alertMsg, String actionName, DialogInterface.OnClickListener action) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("");
         builder.setMessage(alertMsg);
         builder.setCancelable(false);

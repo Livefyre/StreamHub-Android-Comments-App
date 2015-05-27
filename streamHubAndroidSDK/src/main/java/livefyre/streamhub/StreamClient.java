@@ -1,6 +1,5 @@
 package livefyre.streamhub;
 
-import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
@@ -14,13 +13,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
 public class StreamClient {
-	public static String generateStreamUrl(String networkId,
-			String collectionId, String eventId) throws MalformedURLException {
-		final Builder uriBuilder = new Uri.Builder()
-				.scheme(Config.scheme)
+	public static String generateStreamUrl(String collectionId, String eventId) throws MalformedURLException {
+		final Builder uriBuilder = new Builder()
+				.scheme(LivefyreConfig.scheme)
 				.authority(
-						Config.streamDomain + "."
-								+ Config.getHostname(networkId))
+						LivefyreConfig.streamDomain + "."
+								+ LivefyreConfig.getConfiguredNetworkID())
 				.appendPath("v3.1").appendPath("collection")
 				.appendPath(collectionId).appendPath("").appendPath(eventId);
 
@@ -29,10 +27,7 @@ public class StreamClient {
 
 	/**
 	 * Performs a long poll request to the Livefyre's stream endpoint
-	 * 
-	 * @param networkId
-	 *            The collection's network as identified by domain, i.e.
-	 *            livefyre.com.
+	 *
 	 * @param collectionId
 	 *            The Id of the collection
 	 * @param eventId
@@ -44,11 +39,11 @@ public class StreamClient {
 	 * @throws UnsupportedEncodingException
 	 * @throws MalformedURLException
 	 */
-	public static void pollStreamEndpoint(final String networkId,
+	public static void pollStreamEndpoint(
 			final String collectionId, final String eventId,
 			final AsyncHttpResponseHandler handler) throws IOException,
 			JSONException {
-		final String streamEndpoint = generateStreamUrl(networkId,
+		final String streamEndpoint = generateStreamUrl(
 				collectionId, eventId);
 		HttpClient.client.get(streamEndpoint, new AsyncHttpResponseHandler() {
 			@Override
@@ -64,7 +59,7 @@ public class StreamClient {
 							lastEvent = responseJson.getJSONObject("data")
 									.getString("maxEventId");
 
-							pollStreamEndpoint(networkId, collectionId,
+							pollStreamEndpoint( collectionId,
 									lastEvent, handler);
 						}
 
@@ -76,15 +71,13 @@ public class StreamClient {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
 
 			@Override
 			public void onFailure(Throwable error, String content) {
 				super.onFailure(error, content);
 				try {
-					pollStreamEndpoint(networkId, collectionId, eventId,
-							handler);
+					pollStreamEndpoint(collectionId, eventId, handler);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

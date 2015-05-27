@@ -8,9 +8,16 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.livefyre.comments.BaseActivity;
@@ -19,7 +26,8 @@ import com.livefyre.comments.LFSConfig;
 import com.livefyre.comments.LFUtils;
 import com.livefyre.comments.R;
 import com.livefyre.comments.RoundedTransformation;
-import com.livefyre.comments.models.ContentBean;
+import com.livefyre.comments.models.Attachments;
+import com.livefyre.comments.models.Content;
 import com.livefyre.comments.models.Vote;
 import com.livefyre.comments.parsers.ContentParser;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -46,15 +54,19 @@ public class CommentActivity extends BaseActivity {
     LinearLayout featureLL, likeLL, newReplyLL;
 
     ImageView avatarIv, imageAttachedToCommentIv, moreIv, likeIv;
+    WebView webview;
 
     private String contentId;
-    ContentBean comment;
-    Bus mBus=application.getBus();
+    Content comment;
+    Bus mBus = application.getBus();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.comment_activity);
         mBus.register(this);
+
+        setContentView(R.layout.comment_activity);
+
         getDataFromIntent();
 
         pullViews();
@@ -66,11 +78,13 @@ public class CommentActivity extends BaseActivity {
         buildToolBar();
     }
 
-    @Subscribe public void getUpdates(HashSet<String> updatesSet){
+    @Subscribe
+    public void getUpdates(HashSet<String> updatesSet) {
 
-       application.printLog(true,TAG,updatesSet+"");
+        application.printLog(true, TAG, updatesSet + "");
         populateData();
     }
+
 
     View.OnClickListener likeListener = new View.OnClickListener() {
         @Override
@@ -83,7 +97,7 @@ public class CommentActivity extends BaseActivity {
                 int HFVal = knowHelpfulValue(
                         application
                                 .getDataFromSharedPrefs(LFSAppConstants.ID, ""),
-                        ContentParser.ContentCollection.get(contentId).getVote());
+                        ContentParser.ContentMap.get(contentId).getVote());
 
 
                 if (HFVal == 1) {
@@ -91,9 +105,9 @@ public class CommentActivity extends BaseActivity {
                     parameters.put("value", "0");
                     parameters.put(LFSConstants.LFSPostUserTokenKey,
                             LFSConfig.USER_TOKEN);
-                    parameters.put("message_id", ContentParser.ContentCollection.get(contentId).getId());
+                    parameters.put("message_id", ContentParser.ContentMap.get(contentId).getId());
 
-                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentCollection.get(contentId).getId(),
+                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentMap.get(contentId).getId(),
                             LFSConfig.USER_TOKEN, LFSActions.VOTE, parameters,
                             new helpfulCallback());
                 } else {
@@ -101,15 +115,15 @@ public class CommentActivity extends BaseActivity {
                     parameters.put("value", "1");
                     parameters.put(LFSConstants.LFSPostUserTokenKey,
                             LFSConfig.USER_TOKEN);
-                    parameters.put("message_id", ContentParser.ContentCollection.get(contentId).getId());
+                    parameters.put("message_id", ContentParser.ContentMap.get(contentId).getId());
 
-                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentCollection.get(contentId).getId(),
+                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentMap.get(contentId).getId(),
                             LFSConfig.USER_TOKEN, LFSActions.VOTE, parameters,
                             new helpfulCallback());
 
                 }
             } else {
-                showToast("You con't like your own comment.");
+                showToast("You can't like your own comment.");
             }
         }
     };
@@ -133,9 +147,8 @@ public class CommentActivity extends BaseActivity {
         return helpfulValue;
     }
 
-
     private void moreDialog(final String id, final Boolean isFeatured) {
-        ContentBean mBean = ContentParser.ContentCollection.get(contentId);
+        Content mBean = ContentParser.ContentMap.get(contentId);
 
         final Dialog dialog = new Dialog(this,
                 android.R.style.Theme_Translucent_NoTitleBar);
@@ -202,7 +215,7 @@ public class CommentActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent replyView = new Intent(CommentActivity.this, NewActivity.class);
                 replyView.putExtra("id", id);
-                replyView.putExtra(LFSAppConstants.BODY, ContentParser.ContentCollection.get(contentId).getBodyHtml());
+                replyView.putExtra(LFSAppConstants.BODY, ContentParser.ContentMap.get(contentId).getBodyHtml());
                 replyView.putExtra(LFSAppConstants.PURPOSE, LFSAppConstants.EDIT);
                 replyView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(replyView);
@@ -247,7 +260,7 @@ public class CommentActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                flagDialog(ContentParser.ContentCollection.get(contentId).getId());
+                flagDialog(ContentParser.ContentMap.get(contentId).getId());
 
             }
         });
@@ -280,9 +293,9 @@ public class CommentActivity extends BaseActivity {
                 parameters.put(LFSConstants.LFSPostUserTokenKey,
                         LFSConfig.USER_TOKEN);
                 parameters.put("retroactive", "0");
-                WriteClient.flagAuthor(ContentParser.ContentCollection.get(id)
+                WriteClient.flagAuthor(ContentParser.ContentMap.get(id)
                                 .getAuthorId(), LFSConfig.USER_TOKEN, parameters,
-                        new actionCallback());
+                        new banActionCallBack());
 
                 dialog.dismiss();
 
@@ -427,7 +440,7 @@ public class CommentActivity extends BaseActivity {
     View.OnClickListener moreListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            moreDialog(ContentParser.ContentCollection.get(contentId).getId(), ContentParser.ContentCollection.get(contentId).getIsFeatured());
+            moreDialog(ContentParser.ContentMap.get(contentId).getId(), ContentParser.ContentMap.get(contentId).getIsFeatured());
         }
     };
 
@@ -436,7 +449,7 @@ public class CommentActivity extends BaseActivity {
         public void onClick(View v) {
             Intent intent = new Intent(CommentActivity.this, NewActivity.class);
             intent.putExtra(LFSAppConstants.PURPOSE, LFSAppConstants.NEW_REPLY);
-            intent.putExtra(LFSAppConstants.ID, ContentParser.ContentCollection.get(contentId).getId());
+            intent.putExtra(LFSAppConstants.ID, ContentParser.ContentMap.get(contentId).getId());
             startActivity(intent);
         }
     };
@@ -459,7 +472,6 @@ public class CommentActivity extends BaseActivity {
                 dismissProgressDialog();
                 showAlert("Comment Deleted Successfully", "OK", null);
             }
-
         }
 
         @Override
@@ -471,6 +483,28 @@ public class CommentActivity extends BaseActivity {
         }
 
     }
+
+    private class banActionCallBack extends JsonHttpResponseHandler {
+
+        public void onSuccess(JSONObject responce) {
+            Log.d("action ClientCall", "success" + responce);
+            dismissProgressDialog();
+            if (!responce.isNull("data")) {
+                dismissProgressDialog();
+                showAlert("User Banned Successfully", "OK", null);
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable error, String content) {
+            super.onFailure(error, content);
+            dismissProgressDialog();
+            Log.d("action ClientCall", error + "");
+            showToast("Something went wrong.");
+        }
+
+    }
+
 
     private class helpfulCallback extends JsonHttpResponseHandler {
 
@@ -503,18 +537,15 @@ public class CommentActivity extends BaseActivity {
                 showToast(error.toString());
             else
                 showToast("Something went wrong.");
-
         }
-
     }
 
     private void populateData() {
-        if (contentId == null||ContentParser.ContentCollection==null) {
+        if (contentId == null || ContentParser.ContentMap == null) {
 //            showToast("Something went Wrong.");
             finish();
         } else {
-            comment = ContentParser.ContentCollection.get(contentId);
-
+            comment = ContentParser.ContentMap.get(contentId);
             //Author Name
             authorNameTv.setText(comment.getAuthor().getDisplayName());
             //Posted Date
@@ -524,14 +555,49 @@ public class CommentActivity extends BaseActivity {
             commentBody.setText(LFUtils.trimTrailingWhitespace(Html
                             .fromHtml(comment.getBodyHtml())),
                     TextView.BufferType.SPANNABLE);
-
             Picasso.with(getApplicationContext()).load(comment.getAuthor().getAvatar()).fit().transform(new RoundedTransformation(90, 0)).into(avatarIv);
+            if (comment.getAttachments() != null) {
+                if (comment.getAttachments().size() > 0) {
 
-            if (comment.getOembedUrl() != null) {
-                if (comment.getOembedUrl().length() > 0) {
-                    imageAttachedToCommentIv.setVisibility(View.VISIBLE);
-                    application.printLog(true, "comment.getOembedUrl()", comment.getOembedUrl() + " URL");
-                    Picasso.with(getApplication()).load(comment.getOembedUrl()).fit().into(imageAttachedToCommentIv);
+                    final Attachments mAttachments = comment.getAttachments().get(0);
+                    if (mAttachments.getType().equals("video")) {
+                        if (mAttachments.getThumbnail_url() != null) {
+                            if (mAttachments.getThumbnail_url().length() > 0) {
+                                application.printLog(true, "comment.getAttachments()", comment.getAttachments() + " URL");
+                                imageAttachedToCommentIv.setVisibility(View.GONE);
+                                webview.setVisibility(View.VISIBLE);
+                                webview.setWebViewClient(new WebViewClient() {
+
+                                    @Override
+                                    public void onPageFinished(WebView view, String url) {
+                                        super.onPageFinished(view, url);
+                                    }
+                                });
+                                webview.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+                                webview.setInitialScale(120);
+                                webview.getSettings().setJavaScriptEnabled(true);
+                                webview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+                                if (mAttachments.getProvider_name().equals("YouTube")) {
+                                    int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics());
+                                    webview.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    String youtubeId = LFUtils.getYoutubeVideoId(mAttachments.getUrl());
+                                    webview.loadUrl("http://www.youtube.com/embed/" + youtubeId);
+                                } else {
+                                    webview.loadDataWithBaseURL(mAttachments.getLink(), mAttachments.getHTML(), "text/html", "UTF-8", "");
+                                }
+                            }
+                        }
+                    } else {
+                        if (mAttachments.getUrl() != null) {
+                            if (mAttachments.getUrl().length() > 0) {
+                                imageAttachedToCommentIv.setVisibility(View.VISIBLE);
+                                webview.setVisibility(View.GONE);
+                                application.printLog(true, "comment.getAttachments()", comment.getAttachments() + " URL");
+                                Picasso.with(getApplication()).load(mAttachments.getUrl()).fit().into(imageAttachedToCommentIv);
+                            }
+                        }
+                    }
                 } else {
                     imageAttachedToCommentIv.setVisibility(View.GONE);
                 }
@@ -610,6 +676,7 @@ public class CommentActivity extends BaseActivity {
         avatarIv = (ImageView) findViewById(R.id.avatarIv);
         likeIv = (ImageView) findViewById(R.id.likeIv);
         imageAttachedToCommentIv = (ImageView) findViewById(R.id.imageAttachedToCommentIv);
+        webview = (WebView) findViewById(R.id.videoPlayer);
         moreIv = (ImageView) findViewById(R.id.moreIv);
         LinearLayout activityIconLL = (LinearLayout) findViewById(R.id.activityIconLL);
         activityIconLL.setOnClickListener(homeIconListener);
@@ -619,6 +686,7 @@ public class CommentActivity extends BaseActivity {
         newReplyLL.setOnClickListener(newReplyLLListener);
         moreIv.setOnClickListener(moreListener);
         likeLL.setOnClickListener(likeListener);
+
     }
 
     private void buildToolBar() {
@@ -640,4 +708,20 @@ public class CommentActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mBus.unregister(this);
+    }
 }

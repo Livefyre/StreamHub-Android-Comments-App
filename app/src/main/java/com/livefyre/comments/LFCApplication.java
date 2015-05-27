@@ -4,24 +4,20 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-
 import com.livefyre.comments.activities.SplashActivity;
-import com.livefyre.comments.models.ContentBean;
 import com.squareup.otto.Bus;
-
-import java.util.ArrayList;
+import livefyre.streamhub.LivefyreConfig;
 
 public class LFCApplication extends Application {
 
     private SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    private ArrayList<ContentBean> contentCollection;
     Bus mBus;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        LivefyreConfig.setLivefyreNetworkID(LFSConfig.NETWORK_ID);
         AppSingleton.getInstance().setApplication(this);
         init();
         boolean isFirstTime = Boolean.parseBoolean(getDataFromSharedPrefs(LFSAppConstants.IS_FIRST_TIME_STR, LFSAppConstants.IS_FIRST_TIME));
@@ -34,7 +30,6 @@ public class LFCApplication extends Application {
     private void init() {
         sharedPreferences = getApplicationContext().getSharedPreferences(
                 LFSAppConstants.SHARED_PREFERENCES, MODE_PRIVATE);
-        contentCollection = new ArrayList<>();
         mBus=new Bus();
     }
 
@@ -57,14 +52,6 @@ public class LFCApplication extends Application {
     public void printLog(boolean print, String tag, String value) {
         if (print)
             Log.d(tag, value);
-    }
-
-    public void addContent(ContentBean contentBean) {
-        contentCollection.add(contentBean);
-    }
-
-    public ArrayList<ContentBean> getContentCollection() {
-        return contentCollection;
     }
 
     private void ShortcutIcon() {

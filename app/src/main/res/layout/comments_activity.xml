@@ -17,9 +17,9 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/commentsLV"
+            android:layout_below="@+id/swipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/swipe"
             android:clipToPadding="false"
             android:paddingTop="8dp" />
 

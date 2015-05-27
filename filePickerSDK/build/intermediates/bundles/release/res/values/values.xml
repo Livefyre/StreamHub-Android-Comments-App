@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/kvanadev5/Developer/android/livefyre-comments-spike/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/dimens.xml -->
+    <!-- From: file:/Users/kvanadev5/Documents/Developer/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_small">8dp</dimen>
-    <!-- From: file:/Users/kvanadev5/Developer/android/livefyre-comments-spike/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/strings.xml -->
+    <!-- From: file:/Users/kvanadev5/Documents/Developer/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">FilepickerDroid</string>
     <string name="file_picker_animation_duration">400</string>
     <string name="lfs">Livefyre</string>
     <string name="title_activity_file_picker">Filepicker</string>
     <string name="title_activity_file_picker_auth">FilepickerAuthActivity</string>
-    <!-- From: file:/Users/kvanadev5/Developer/android/livefyre-comments-spike/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/styles.xml -->
+    <!-- From: file:/Users/kvanadev5/Documents/Developer/StreamHub-Android-Comments-App/filePickerSDK/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Light"/>
 </resources>

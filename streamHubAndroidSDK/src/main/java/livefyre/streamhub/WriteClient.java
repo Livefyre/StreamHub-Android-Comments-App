@@ -1,6 +1,5 @@
 package livefyre.streamhub;
 
-import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
@@ -43,8 +42,6 @@ public class WriteClient {
     /**
      * Post content to a Livefyre collection.
      *
-     * @param networkId    The collection's network as identified by domain, i.e.
-     *                     livefyre.com.
      * @param collectionId The Id of the collection.
      * @param parentId     The id of the content to which this content is a reply. If not
      *                     necessary (that is, this is a top level post, then set to
@@ -54,7 +51,7 @@ public class WriteClient {
      * @throws UnsupportedEncodingException
      * @throws MalformedURLException
      */
-    public static void postContent(String networkId, String collectionId,
+    public static void postContent( String collectionId,
                                    String parentId, String userToken,
                                    HashMap<String, Object> parameters, JsonHttpResponseHandler handler)
             throws MalformedURLException {
@@ -105,7 +102,7 @@ public class WriteClient {
 
         Log.d("", "" + bodyParams);
         HttpClient.client.post(
-                generateWriteURL(networkId, collectionId, userToken, parameters
+                generateWriteURL(collectionId, userToken, parameters
                         .get(LFSConstants.LFSPostType).toString()), bodyParams,
                 handler);
 
@@ -124,10 +121,10 @@ public class WriteClient {
                                    String token, LFSFlag action, RequestParams parameters,
                                    JsonHttpResponseHandler handler) {
 
-        String url = (new Uri.Builder().scheme(Config.scheme)
-                .authority(Config.quillDomain + "." + Config.networkId)
+        String url = (new Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api").appendPath("v3.0").appendPath("message").appendPath("")) +
-                contentId + (new Uri.Builder().appendPath("").appendPath("flag")
+                contentId + (new Builder().appendPath("").appendPath("flag")
                 .appendPath(flags[action.value()])
                 .appendQueryParameter("lftoken", token)
                 .appendQueryParameter("collection_id", collectionId));
@@ -138,7 +135,6 @@ public class WriteClient {
     }
 
     /**
-     * @param networkId
      * @param collectionId
      * @param userToken
      * @param endpoint
@@ -146,11 +142,11 @@ public class WriteClient {
      * @throws MalformedURLException
      */
 
-    public static String generateWriteURL(String networkId,
+    public static String generateWriteURL(
                                           String collectionId, String userToken, String endpoint)
             throws MalformedURLException {
-        final Builder uriBuilder = new Uri.Builder().scheme(Config.scheme)
-                .authority(Config.quillDomain + "." + Config.networkId)
+        final Builder uriBuilder = new Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api").appendPath("v3.0").appendPath("collection")
                 .appendPath(collectionId).appendPath("post");
         if (LFSConstants.LFSPostTypeReview == endpoint)
@@ -178,8 +174,8 @@ public class WriteClient {
         RequestParams bodyParams = new RequestParams();
         bodyParams.put("lftoken", userToken);
 
-        final Builder uriBuilder = new Uri.Builder().scheme(Config.scheme)
-                .authority(Config.quillDomain + "." + Config.networkId)
+        final Builder uriBuilder = new Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api").appendPath("v3.0").appendPath("collection")
                 .appendPath(collectionId).appendPath(action)
                 .appendPath(contentId).appendPath("")
@@ -203,10 +199,10 @@ public class WriteClient {
                                   String token, LFSActions action, RequestParams parameters,
                                   JsonHttpResponseHandler handler) {
         // Build the URL
-        String url = new Uri.Builder().scheme(Config.scheme)
-                .authority(Config.quillDomain + "." + Config.networkId)
+        String url = new Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api").appendPath("v3.0").appendPath("message").appendPath("") + contentId +
-                (new Uri.Builder().appendPath(actions[action.value()]).appendPath("")
+                (new Builder().appendPath(actions[action.value()]).appendPath("")
                         .appendQueryParameter("lftoken", token)
                         .appendQueryParameter("collection_id", collectionId));
 
@@ -227,10 +223,10 @@ public class WriteClient {
                                   RequestParams parameters, JsonHttpResponseHandler handler) {
         // Build the URL
 
-        final Builder uriBuilder = new Uri.Builder().scheme(Config.scheme)
-                .authority(Config.quillDomain + "." + Config.networkId)
+        final Builder uriBuilder = new Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api").appendPath("v3.0").appendPath("author");
-        String url = uriBuilder + "" + authorId + (new Uri.Builder().appendPath("ban").appendPath("").appendQueryParameter("lftoken", token));
+        String url = uriBuilder + "/" + authorId + (new Builder().appendPath("ban").appendPath("").appendQueryParameter("lftoken", token));
 
         Log.d("Action SDK call", "" + url);
         Log.d("Action SDK call", "" + parameters);

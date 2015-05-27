@@ -16,7 +16,8 @@ import com.livefyre.comments.LFSAppConstants;
 import com.livefyre.comments.LFUtils;
 import com.livefyre.comments.R;
 import com.livefyre.comments.RoundedTransformation;
-import com.livefyre.comments.models.ContentBean;
+import com.livefyre.comments.models.Attachments;
+import com.livefyre.comments.models.Content;
 import com.livefyre.comments.models.Vote;
 import com.squareup.picasso.Picasso;
 
@@ -29,14 +30,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
     private LFCApplication application = AppSingleton.getInstance().getApplication();
     private LayoutInflater mLayoutInflater;
     Context mContext;
-    private List<ContentBean> contentArray = null;
+    private List<Content> contentArray = null;
 
     private static final int VIEW_COUNT = 3;
     private static final int DELETED = -1;
     private static final int PARENT = 0;
     private static final int CHILD = 1;
 
-    public CommentsAdapter(Context context, List<ContentBean> contentArray) {
+    public CommentsAdapter(Context context, List<Content> contentArray) {
         this.mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         this.contentArray = contentArray;
@@ -70,7 +71,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        final ContentBean comment = contentArray.get(position);
+        final Content comment = contentArray.get(position);
 
         int viewType = comment.getContentType().getValue();
 
@@ -83,8 +84,13 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
                     float density = mContext.getResources().getDisplayMetrics().density;
 
                     int px = (int) (40 * density);
+                    int depthValue = 0;
+                    if (comment.getParentPath() != null) {
+                        depthValue = comment.getParentPath().size();
+                    }
 
-                    switch (comment.getDepth()) {
+
+                    switch (depthValue) {
                         case 0:
                             holder.commentsListItemLL.setPadding(16, 0, 16, 16);
                             break;
@@ -139,18 +145,44 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
                     } else
                         holder.likesTv.setVisibility(View.GONE);
 
-
                     if (comment.getAuthor().getAvatar().length() > 0) {
                         Picasso.with(mContext).load(comment.getAuthor().getAvatar()).fit().transform(new RoundedTransformation(90, 0)).into(holder.avatarIv);
                     } else {
                     }
+                    if (comment.getAttachments() != null) {
+                        if (comment.getAttachments().size() > 0) {
+
+                            Attachments mAttachments = comment.getAttachments().get(0);
+
+                            if (mAttachments.getType().equals("video")) {
+
+                                if (mAttachments.getThumbnail_url() != null) {
+                                    if (mAttachments.getThumbnail_url().length() > 0) {
+                                        holder.imageAttachedToCommentIv.setVisibility(View.VISIBLE);
+                                        Picasso.with(mContext).load(mAttachments.getThumbnail_url()).fit().into(holder.imageAttachedToCommentIv);
+                                    } else {
+                                        holder.imageAttachedToCommentIv.setVisibility(View.GONE);
+                                    }
+
+                                } else {
+                                    holder.imageAttachedToCommentIv.setVisibility(View.GONE);
+                                }
+                            } else {
 
 
-                    if (comment.getOembedUrl() != null) {
-                        if (comment.getOembedUrl().length() > 0) {
-                            holder.imageAttachedToCommentIv.setVisibility(View.VISIBLE);
-                            application.printLog(true, "comment.getOembedUrl()", comment.getOembedUrl() + " URL");
-                            Picasso.with(mContext).load(comment.getOembedUrl()).fit().into(holder.imageAttachedToCommentIv);
+                                if (mAttachments.getUrl() != null) {
+                                    if (mAttachments.getUrl().length() > 0) {
+                                        holder.imageAttachedToCommentIv.setVisibility(View.VISIBLE);
+                                        Picasso.with(mContext).load(mAttachments.getUrl()).fit().into(holder.imageAttachedToCommentIv);
+                                    } else {
+                                        holder.imageAttachedToCommentIv.setVisibility(View.GONE);
+                                    }
+
+                                } else {
+                                    holder.imageAttachedToCommentIv.setVisibility(View.GONE);
+                                }
+                            }
+
                         } else {
                             holder.imageAttachedToCommentIv.setVisibility(View.GONE);
                         }
@@ -166,8 +198,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
                 float density = mContext.getResources().getDisplayMetrics().density;
 
                 int px = (int) (40 * density);
+                int depthValue = 0;
+                if (comment.getParentPath() != null) {
+                    depthValue = comment.getParentPath().size();
+                }
 
-                switch (comment.getDepth()) {
+                switch (depthValue) {
                     case 0:
                         holder.deleted_item.setPadding(16, 0, 16, 16);
                         break;
@@ -185,7 +221,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
                         break;
 
                 }
-               break;
+                break;
         }
     }
 
@@ -200,7 +236,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
 
         TextView authorNameTv, postedDateOrTime, commentBody, moderatorTv, likesTv;
 
-        LinearLayout featureLL, commentsListItemLL,deleted_item;
+        LinearLayout featureLL, commentsListItemLL, deleted_item;
 
         ImageView avatarIv, imageAttachedToCommentIv;
 
@@ -208,16 +244,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
             super(item);
 
             bottomLine = item.findViewById(R.id.bottomLine);
-
             commentsListItemLL = (LinearLayout) item.findViewById(R.id.commentsListItemLL);
-            deleted_item=(LinearLayout) item.findViewById(R.id.deletedCell);
+            deleted_item = (LinearLayout) item.findViewById(R.id.deletedCell);
             authorNameTv = (TextView) item.findViewById(R.id.authorNameTv);
             postedDateOrTime = (TextView) item.findViewById(R.id.postedDateOrTime);
             commentBody = (TextView) item.findViewById(R.id.commentBody);
             likesTv = (TextView) item.findViewById(R.id.likesFullTv);
             moderatorTv = (TextView) item.findViewById(R.id.moderatorTv);
             featureLL = (LinearLayout) item.findViewById(R.id.featureLL);
-
             avatarIv = (ImageView) item.findViewById(R.id.avatarIv);
             imageAttachedToCommentIv = (ImageView) item.findViewById(R.id.imageAttachedToCommentIv);
         }

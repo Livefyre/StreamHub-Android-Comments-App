@@ -150,7 +150,7 @@ public class NewActivity extends BaseActivity {
             perameters.put(LFSConstants.LFSPostAttachmentsKey,
                     (new JSONArray().put(imgObj)).toString());
         try {
-            WriteClient.postContent(LFSConfig.NETWORK_ID,
+            WriteClient.postContent(
                     LFSConfig.COLLECTION_ID, null, LFSConfig.USER_TOKEN,
                     perameters, new writeclientCallback());
         } catch (MalformedURLException e) {
@@ -173,7 +173,7 @@ public class NewActivity extends BaseActivity {
                 perameters.put(LFSConstants.LFSPostAttachmentsKey,
                         (new JSONArray().put(imgObj)).toString());
             try {
-                WriteClient.postContent(LFSConfig.NETWORK_ID,
+                WriteClient.postContent(
                         LFSConfig.COLLECTION_ID, id, LFSConfig.USER_TOKEN,
                         perameters, new newReplyCallback());
             } catch (MalformedURLException e) {
@@ -312,7 +312,6 @@ public class NewActivity extends BaseActivity {
                 postNewReply(htmlReplyText);
             }
 
-
         }
     };
 
@@ -341,7 +340,6 @@ public class NewActivity extends BaseActivity {
                 FilePickerAPI.setKey(LFSConfig.FILEPICKER_API_KEY);
                 startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
             }
-
         }
     };
 
@@ -389,7 +387,7 @@ public class NewActivity extends BaseActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     Picasso.with(getBaseContext()).load(imgUrl).fit().into(capturedImage, new ImageLoadCallBack());
                 } catch (Exception e) {
-
+e.printStackTrace();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -36,7 +36,6 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-
                 <TextView
                     android:id="@+id/authorNameTv"
                     android:layout_width="wrap_content"
@@ -67,6 +66,7 @@
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/black54"
                         android:textSize="14sp" />
+
                 </LinearLayout>
 
 
@@ -120,7 +120,6 @@
                 </LinearLayout>
             </RelativeLayout>
 
-
         </LinearLayout>
 
     </LinearLayout>
@@ -142,6 +141,22 @@
         android:src="@drawable/ic_launcher"
         android:visibility="gone" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <WebView
+            android:id="@+id/videoPlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:fitsSystemWindows="true"
+            android:scrollbars="none"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/likesFullTv"
         android:layout_width="fill_parent"
@@ -158,5 +173,5 @@
         android:layout_height=".5dp"
         android:layout_marginTop="8dp"
         android:background="#d6d6d6"
-        android:visibility="gone"></View>
+        android:visibility="gone"/>
 </LinearLayout>

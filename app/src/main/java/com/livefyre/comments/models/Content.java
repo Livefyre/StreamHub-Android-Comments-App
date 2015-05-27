@@ -1,12 +1,13 @@
 package com.livefyre.comments.models;
 
-import org.json.JSONArray;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ContentBean implements Serializable {
-    private static final long serialVersionUID = 1775265761057887054L;
+/**
+ * Created by kvanadev5 on 18/03/15.
+ */
+public class Content implements Serializable {
 
     private CommentStatus reviewStatus = CommentStatus.NOT_DELETED;
     private int visibilityCount=0;
@@ -22,18 +23,17 @@ public class ContentBean implements Serializable {
     private String createdAt;
     private String type;
     private String event;
-    private List<String>  childBeanContent=null;
+    private List<String> parentPath=null;
+    private List<String> childPath=null;
     private AuthorsBean author;
     private int depth=0;
     private List<Vote> vote;
     private int helpfulcount=0;
-    private String oembedUrl;
-    private JSONArray childContent;
-    private ContentTypeEnum contentType=ContentTypeEnum.CHILD;	//	Parent or Child
+    private List<Attachments> attachments;
     private int newReplyCount=0;
+    private ContentTypeEnum contentType= ContentTypeEnum.CHILD;
     private String ancestorId="";
     private String from="bootstrap";
-
 
     public String getVisibility() {
         return visibility;
@@ -47,7 +47,7 @@ public class ContentBean implements Serializable {
         return isFeatured;
     }
 
-    public void setIsFeatured(Boolean isFeatured) {
+    public void setIsFeatured(boolean isFeatured) {
         this.isFeatured = isFeatured;
     }
 
@@ -109,6 +109,7 @@ public class ContentBean implements Serializable {
 
 
 
+
     public String getType() {
         return type;
     }
@@ -140,8 +141,34 @@ public class ContentBean implements Serializable {
     public void setAuthor(AuthorsBean author) {
         this.author = author;
     }
+    public List<String> getParentPath() {
+        return parentPath;
+    }
 
+    public void setParentPath(String parentPathId) {
+        if(this.parentPath==null){
+            this.parentPath=new ArrayList<>();
+        }
+        boolean flag=false;
+        for(int i=0;i<parentPath.size();i++){
+            if(parentPath.get(i).equalsIgnoreCase(parentPathId)){
+                flag=true;
+            }
+        }
+        if(!flag)
+            this.parentPath.add(parentPathId);
+    }
 
+    public List<String> getChildPath() {
+        return childPath;
+    }
+
+    public void setChildPath(String childPath) {
+        if(this.childPath==null){
+            this.childPath=new ArrayList<>();
+        }
+        this.childPath.add(childPath);
+    }
 
     public List<Vote> getVote() {
         return vote;
@@ -149,6 +176,17 @@ public class ContentBean implements Serializable {
 
     public void setVote(List<Vote> vote) {
         this.vote = vote;
+    }
+
+    public List<Attachments> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachments attachments) {
+        if(this.attachments==null){
+            this.attachments=new ArrayList<Attachments>();
+        }
+        this.attachments.add(attachments);
     }
 
     public int getDepth() {
@@ -183,30 +221,6 @@ public class ContentBean implements Serializable {
         this.helpfulcount = helpfulcount;
     }
 
-    public String getOembedUrl() {
-        return oembedUrl;
-    }
-
-    public void setOembedUrl(String oembedUrl) {
-        this.oembedUrl = oembedUrl;
-    }
-
-    public JSONArray getChildContent() {
-        return childContent;
-    }
-
-    public void setChildContent(JSONArray childContent) {
-        this.childContent = childContent;
-    }
-
-    public List<String> getChildBeanContent() {
-        return childBeanContent;
-    }
-
-    public void setChildBeanContent(List<String> childBeanContent) {
-        this.childBeanContent = childBeanContent;
-    }
-
     public ContentTypeEnum getContentType() {
         return contentType;
     }
@@ -238,10 +252,5 @@ public class ContentBean implements Serializable {
     public void setFrom(String from) {
         this.from = from;
     }
-
-
-
-
-
 
 }
