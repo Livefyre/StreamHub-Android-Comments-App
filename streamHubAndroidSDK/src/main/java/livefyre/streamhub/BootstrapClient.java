@@ -1,5 +1,6 @@
 package livefyre.streamhub;
 
+import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
@@ -7,7 +8,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zjj
@@ -90,7 +91,7 @@ public class BootstrapClient {
         final String article64 = Helpers.generateBase64String(articleId);
 
         // Build the URL
-        Builder uriBuilder = new Builder()
+        Builder uriBuilder = new Uri.Builder()
                 .scheme(LivefyreConfig.scheme)
                 .authority(LivefyreConfig.bootstrapDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("bs3")

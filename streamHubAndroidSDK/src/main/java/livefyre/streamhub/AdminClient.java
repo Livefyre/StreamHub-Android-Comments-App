@@ -1,12 +1,13 @@
 package livefyre.streamhub;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+
+import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 
 /**
  * @author Kvana Dev
@@ -55,7 +56,7 @@ public class AdminClient {
                                               String siteId)
             throws UnsupportedEncodingException
     {
-        Builder uriBuilder = new Builder()
+        Builder uriBuilder = new Uri.Builder()
                 .scheme(LivefyreConfig.scheme)
                 .authority(LivefyreConfig.adminDomain + "." + LivefyreConfig.getConfiguredNetworkID())
                 .appendPath("api")

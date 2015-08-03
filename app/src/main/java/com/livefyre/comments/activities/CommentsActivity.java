@@ -33,6 +33,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -181,7 +182,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
         activityTitle = (TextView) findViewById(R.id.activityTitle);
         activityTitle.setText("Comments");
         activityTitle.setOnClickListener(activityTitleListenerHide);
-
     }
 
     private void pullViews() {
@@ -260,7 +260,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
             bootstrapClientCall();
         }
-
     }
 
     void bootstrapClientCall() {
@@ -403,6 +402,11 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
         }
     }
 

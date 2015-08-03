@@ -36,6 +36,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
@@ -481,7 +482,6 @@ public class CommentActivity extends BaseActivity {
             Log.d("action ClientCall", error + "");
             showToast("Something went wrong.");
         }
-
     }
 
     private class banActionCallBack extends JsonHttpResponseHandler {
@@ -503,6 +503,7 @@ public class CommentActivity extends BaseActivity {
             showToast("Something went wrong.");
         }
 
+
     }
 
 
@@ -519,7 +520,6 @@ public class CommentActivity extends BaseActivity {
             showToast("Something went wrong.");
 
         }
-
     }
 
     private class flagCallback extends JsonHttpResponseHandler {
@@ -538,6 +538,7 @@ public class CommentActivity extends BaseActivity {
             else
                 showToast("Something went wrong.");
         }
+
     }
 
     private void populateData() {

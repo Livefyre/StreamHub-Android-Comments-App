@@ -1,5 +1,6 @@
 package livefyre.streamhub;
 
+import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
@@ -14,7 +15,7 @@ import java.net.MalformedURLException;
 
 public class StreamClient {
 	public static String generateStreamUrl(String collectionId, String eventId) throws MalformedURLException {
-		final Builder uriBuilder = new Builder()
+		final Builder uriBuilder = new Uri.Builder()
 				.scheme(LivefyreConfig.scheme)
 				.authority(
 						LivefyreConfig.streamDomain + "."
@@ -50,7 +51,6 @@ public class StreamClient {
 			public void onSuccess(String response) {
 				handler.onSuccess(response);
 				try {
-
 					if (response != null) {
 						Log.d("Stream Clint Call", "Success" + response);
 						JSONObject responseJson = new JSONObject(response);
@@ -62,7 +62,6 @@ public class StreamClient {
 							pollStreamEndpoint( collectionId,
 									lastEvent, handler);
 						}
-
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -72,7 +71,6 @@ public class StreamClient {
 					e.printStackTrace();
 				}
 			}
-
 			@Override
 			public void onFailure(Throwable error, String content) {
 				super.onFailure(error, content);
@@ -86,7 +84,6 @@ public class StreamClient {
 					e.printStackTrace();
 				}
 			}
-
 		});
 	}
 }

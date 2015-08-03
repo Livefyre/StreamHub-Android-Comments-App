@@ -26,6 +26,7 @@ import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -189,7 +190,6 @@ public class NewActivity extends BaseActivity {
             WriteClient.postAction(LFSConfig.COLLECTION_ID, id,
                     LFSConfig.USER_TOKEN, LFSActions.EDIT, perameters,
                     new editCallback());
-
         }
     }
 
@@ -283,7 +283,6 @@ public class NewActivity extends BaseActivity {
                 showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
             }
         }
-
     }
 
     // Listeners
@@ -401,7 +400,6 @@ e.printStackTrace();
         public void onSuccess() {
             //Hide
             progressBar.setVisibility(View.GONE);
-
         }
 
         @Override
