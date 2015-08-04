@@ -104,12 +104,12 @@ public class WriteClient {
     }
 
     /**
-     * @param collectionId
+     * @param collectionId          The Id of the collection.
      * @param contentId
-     * @param token
+     * @param token                 The token of the logged in user.
      * @param action
      * @param parameters
-     * @param handler
+     * @param handler               Response handler
      */
 
     public static void flagContent(String collectionId, String contentId,
@@ -130,15 +130,40 @@ public class WriteClient {
     }
 
     /**
-     * @param collectionId
-     * @param userToken
+     * @param collectionId          The Id of the collection.
+     * @param contentId
+     * @param token                 The token of the logged in user.
+     * @param action
+     * @param parameters
+     * @param networkID             Livefyre provided network name.
+     * @param handler                Response handler
+     */
+    public static void flagContent(String collectionId, String contentId,
+                                   String token, LFSFlag action, RequestParams parameters,
+                                   String networkID, JsonHttpResponseHandler handler) {
+
+        String url = (new Uri.Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + networkID)
+                .appendPath("api").appendPath("v3.0").appendPath("message").appendPath("")) +
+                contentId + (new Uri.Builder().appendPath("").appendPath("flag")
+                .appendPath(flags[action.value()])
+                .appendQueryParameter("lftoken", token)
+                .appendQueryParameter("collection_id", collectionId));
+
+        Log.d("Action SDK call", "" + url);
+        Log.d("Action SDK call", "" + parameters);
+        HttpClient.client.post(url, parameters, handler);
+    }
+
+    /**
+     * @param collectionId      The Id of the collection.
+     * @param userToken         The token of the logged in user.
      * @param endpoint
      * @return
      * @throws MalformedURLException
      */
-
     public static String generateWriteURL(
-                                          String collectionId, String userToken, String endpoint)
+            String collectionId, String userToken, String endpoint)
             throws MalformedURLException {
         final Builder uriBuilder = new Uri.Builder().scheme(LivefyreConfig.scheme)
                 .authority(LivefyreConfig.quillDomain + "." + LivefyreConfig.getConfiguredNetworkID())
@@ -153,12 +178,36 @@ public class WriteClient {
     }
 
     /**
+     *
+     * @param collectionId      The Id of the collection.
+     * @param userToken         The token of the logged in user.
+     * @param endpoint
+     * @param networkID         Livefyre provided network name.
+     * @return
+     * @throws MalformedURLException
+     */
+    public static String generateWriteURL(
+                                          String collectionId, String userToken, String endpoint,String networkID)
+            throws MalformedURLException {
+        final Builder uriBuilder = new Uri.Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + networkID)
+                .appendPath("api").appendPath("v3.0").appendPath("collection")
+                .appendPath(collectionId).appendPath("post");
+        if (LFSConstants.LFSPostTypeReview.equals(endpoint))
+            uriBuilder.appendPath(endpoint).appendPath("");
+        else
+            uriBuilder.appendPath("");
+        Log.d("Write URL", "" + uriBuilder.toString());
+        return uriBuilder.toString();
+    }
+
+    /**
      * @param action
      * @param contentId
-     * @param collectionId
-     * @param userToken
+     * @param collectionId       The Id of the collection.
+     * @param userToken         The token of the logged in user.
      * @param parameters
-     * @param handler
+     * @param handler           Response handler
      * @throws MalformedURLException
      */
 
@@ -182,12 +231,42 @@ public class WriteClient {
     }
 
     /**
-     * @param collectionId
+     *
+     * @param action
      * @param contentId
-     * @param token
+     * @param collectionId       The Id of the collection.
+     * @param userToken         The token of the logged in user.
+     * @param parameters
+     * @param networkID     Livefyre provided network name
+     * @param handler       Response handler
+     * @throws MalformedURLException
+     */
+    public static void featureMessage(String action, String contentId,
+                                      String collectionId, String userToken,
+                                      HashMap<String, Object> parameters, String networkID, JsonHttpResponseHandler handler)
+            throws MalformedURLException {
+        RequestParams bodyParams = new RequestParams();
+        bodyParams.put("lftoken", userToken);
+
+        final Builder uriBuilder = new Uri.Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + networkID)
+                .appendPath("api").appendPath("v3.0").appendPath("collection")
+                .appendPath(collectionId).appendPath(action)
+                .appendPath(contentId).appendPath("")
+                .appendQueryParameter("lftoken", userToken)
+                .appendQueryParameter("collection_id", collectionId);
+
+        Log.d("SDK", "" + uriBuilder);
+        HttpClient.client.post(uriBuilder.toString(), bodyParams, handler);
+    }
+
+    /**
+     * @param collectionId       The Id of the collection.
+     * @param contentId
+     * @param token             The token of the logged in user.
      * @param action
      * @param parameters
-     * @param handler
+     * @param handler           Response handler
      */
 
     public static void postAction(String collectionId, String contentId,
@@ -208,10 +287,37 @@ public class WriteClient {
     }
 
     /**
+     * @param collectionId     The Id of the collection.
+     * @param contentId
+     * @param token            Livefyre Token
+     * @param action
+     * @param parameters
+     * @param networkID     Livefyre provided network name
+     * @param handler       Response handler
+     */
+
+    public static void postAction(String collectionId, String contentId,
+                                  String token, LFSActions action, RequestParams parameters,
+                                  String networkID, JsonHttpResponseHandler handler) {
+        // Build the URL
+        String url = new Uri.Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + networkID)
+                .appendPath("api").appendPath("v3.0").appendPath("message").appendPath("") + contentId +
+                (new Uri.Builder().appendPath(actions[action.value()]).appendPath("")
+                        .appendQueryParameter("lftoken", token)
+                        .appendQueryParameter("collection_id", collectionId));
+
+
+        Log.d("Action SDK call", "" + url);
+        Log.d("Action SDK call", "" + parameters);
+        HttpClient.client.post(url, parameters, handler);
+    }
+
+    /**
      * @param authorId   Author of Post
      * @param token      Livefyre Token
-     * @param parameters Perameters includes network,
-     * @param handler
+     * @param parameters Parameters includes network,
+     * @param handler   Response handler
      */
 
     public static void flagAuthor(String authorId, String token,
@@ -228,4 +334,25 @@ public class WriteClient {
         HttpClient.client.post(url, parameters, handler);
     }
 
+    /**
+     *
+     * @param authorId          Author of Post
+     * @param token             Livefyre Token
+     * @param parameters
+     * @param networkID         Livefyre provided network name
+     * @param handler           Response handler
+     */
+    public static void flagAuthor(String authorId, String token,
+                                  RequestParams parameters, String networkID, JsonHttpResponseHandler handler) {
+        // Build the URL
+
+        final Builder uriBuilder = new Uri.Builder().scheme(LivefyreConfig.scheme)
+                .authority(LivefyreConfig.quillDomain + "." + networkID)
+                .appendPath("api").appendPath("v3.0").appendPath("author");
+        String url = uriBuilder + "/" + authorId + (new Uri.Builder().appendPath("ban").appendPath("").appendQueryParameter("lftoken", token));
+
+        Log.d("Action SDK call", "" + url);
+        Log.d("Action SDK call", "" + parameters);
+        HttpClient.client.post(url, parameters, handler);
+    }
 }

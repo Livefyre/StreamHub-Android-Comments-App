@@ -26,7 +26,6 @@ import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,8 +50,7 @@ public class NewActivity extends BaseActivity {
     RelativeLayout deleteCapturedImage;
     JSONObject imgObj;
     //id-selected comment Id Used for editing and new reply
-    String imgUrl, purpose, id, body;
-    boolean isEdit;
+    String purpose, id, body;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +96,6 @@ public class NewActivity extends BaseActivity {
         deleteCapturedImage.setOnClickListener(deleteCapturedImageListener);
     }
 
-
     private void setListenersToViewsAndSetConfig() {
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -137,23 +134,20 @@ public class NewActivity extends BaseActivity {
 
     }
 
-
     void postNewComment(String body) {
-
         showProgressDialog();
-        HashMap<String, Object> perameters = new HashMap<>();
-
-        perameters.put(LFSConstants.LFSPostBodyKey, body);
-        perameters.put(LFSConstants.LFSPostType,
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put(LFSConstants.LFSPostBodyKey, body);
+        parameters.put(LFSConstants.LFSPostType,
                 LFSConstants.LFSPostTypeComment);
-        perameters.put(LFSConstants.LFSPostUserTokenKey, LFSConfig.USER_TOKEN);
+        parameters.put(LFSConstants.LFSPostUserTokenKey, LFSConfig.USER_TOKEN);
         if (imgObj != null)
-            perameters.put(LFSConstants.LFSPostAttachmentsKey,
+            parameters.put(LFSConstants.LFSPostAttachmentsKey,
                     (new JSONArray().put(imgObj)).toString());
         try {
             WriteClient.postContent(
                     LFSConfig.COLLECTION_ID, null, LFSConfig.USER_TOKEN,
-                    perameters, new writeclientCallback());
+                    parameters, new writeclientCallback());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -164,35 +158,33 @@ public class NewActivity extends BaseActivity {
 
         if (purpose.equals(LFSAppConstants.NEW_REPLY)) {
             Log.d("REPLY", "IN NEW REPLY");
-            HashMap<String, Object> perameters = new HashMap<>();
-            perameters.put(LFSConstants.LFSPostBodyKey, body);
-            perameters.put(LFSConstants.LFSPostType,
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put(LFSConstants.LFSPostBodyKey, body);
+            parameters.put(LFSConstants.LFSPostType,
                     LFSConstants.LFSPostTypeReply);
-            perameters.put(LFSConstants.LFSPostUserTokenKey,
+            parameters.put(LFSConstants.LFSPostUserTokenKey,
                     LFSConfig.USER_TOKEN);
             if (imgObj != null)
-                perameters.put(LFSConstants.LFSPostAttachmentsKey,
+                parameters.put(LFSConstants.LFSPostAttachmentsKey,
                         (new JSONArray().put(imgObj)).toString());
             try {
                 WriteClient.postContent(
                         LFSConfig.COLLECTION_ID, id, LFSConfig.USER_TOKEN,
-                        perameters, new newReplyCallback());
+                        parameters, new newReplyCallback());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         } else if (purpose.equals(LFSAppConstants.EDIT)) {
             Log.d("EDIT", "IN EDIT REPLY");
-
-            RequestParams perameters = new RequestParams();
-            perameters.put(LFSConstants.LFSPostBodyKey, body);
-            perameters.put(LFSConstants.LFSPostUserTokenKey,
+            RequestParams parameters = new RequestParams();
+            parameters.put(LFSConstants.LFSPostBodyKey, body);
+            parameters.put(LFSConstants.LFSPostUserTokenKey,
                     LFSConfig.USER_TOKEN);
             WriteClient.postAction(LFSConfig.COLLECTION_ID, id,
-                    LFSConfig.USER_TOKEN, LFSActions.EDIT, perameters,
+                    LFSConfig.USER_TOKEN, LFSActions.EDIT, parameters,
                     new editCallback());
         }
     }
-
     //Call backs
 
     //New Comment
@@ -208,7 +200,6 @@ public class NewActivity extends BaseActivity {
             super.onFailure(error, content);
             dismissProgressDialog();
             Log.d("data error", "" + content);
-
             try {
                 JSONObject errorJson = new JSONObject(content);
                 if (!errorJson.isNull("msg")) {
@@ -220,9 +211,7 @@ public class NewActivity extends BaseActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
                 showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
-
             }
-
         }
     }
 
@@ -245,7 +234,6 @@ public class NewActivity extends BaseActivity {
                 JSONObject errorJson = new JSONObject(content);
                 if (!errorJson.isNull("msg")) {
                     showAlert(errorJson.getString("msg"), "TRY AGAIN", tryAgain);
-
                 } else {
                     showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
                 }
@@ -255,7 +243,6 @@ public class NewActivity extends BaseActivity {
 
             }
         }
-
     }
 
     // Edit Comment
@@ -265,7 +252,6 @@ public class NewActivity extends BaseActivity {
             dismissProgressDialog();
             showAlert("Reply Edited Successfully.", "OK", null);
         }
-
         @Override
         public void onFailure(Throwable error, String content) {
             super.onFailure(error, content);
@@ -274,7 +260,6 @@ public class NewActivity extends BaseActivity {
                 JSONObject errorJson = new JSONObject(content);
                 if (!errorJson.isNull("msg")) {
                     showAlert(errorJson.getString("msg"), "TRY AGAIN", tryAgain);
-
                 } else {
                     showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
                 }
@@ -294,23 +279,18 @@ public class NewActivity extends BaseActivity {
                 showAlert("No connection available", "TRY AGAIN", tryAgain);
                 return;
             }
-
             String description = commentEt.getText().toString();
-
             if (description.length() == 0) {
                 showAlert("Please enter text to post.", "TRY AGAIN", tryAgain);
                 return;
             }
-
             if (purpose.equals(LFSAppConstants.NEW_COMMENT)) {
-
                 String descriptionHTML = Html.toHtml((android.text.Spanned) commentEt.getText());
                 postNewComment(descriptionHTML);
             } else {
                 String htmlReplyText = Html.toHtml((android.text.Spanned) commentEt.getText());
                 postNewReply(htmlReplyText);
             }
-
         }
     };
 
@@ -395,7 +375,6 @@ e.printStackTrace();
     }
 
     private class ImageLoadCallBack implements Callback {
-
         @Override
         public void onSuccess() {
             //Hide

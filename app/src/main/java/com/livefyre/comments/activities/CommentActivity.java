@@ -11,7 +11,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -36,7 +35,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.Header;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
@@ -117,7 +115,6 @@ public class CommentActivity extends BaseActivity {
                     parameters.put(LFSConstants.LFSPostUserTokenKey,
                             LFSConfig.USER_TOKEN);
                     parameters.put("message_id", ContentParser.ContentMap.get(contentId).getId());
-
                     WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentMap.get(contentId).getId(),
                             LFSConfig.USER_TOKEN, LFSActions.VOTE, parameters,
                             new helpfulCallback());
@@ -136,7 +133,6 @@ public class CommentActivity extends BaseActivity {
             for (int i = 0; i < v.size(); i++) {
                 if (v.get(i).getAuthor().equals(authorId)) { // helpful or not
                     // helpful
-
                     if (v.get(i).getValue().equals("1"))
                         helpfulValue = 1;
                     else
@@ -144,7 +140,6 @@ public class CommentActivity extends BaseActivity {
                     break;
                 }
             }
-
         return helpfulValue;
     }
 
@@ -238,9 +233,7 @@ public class CommentActivity extends BaseActivity {
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
-
                 } else {
-
                     try {
                         WriteClient.featureMessage("feature", id,
                                 LFSConfig.COLLECTION_ID, LFSConfig.USER_TOKEN,
@@ -250,9 +243,7 @@ public class CommentActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                 }
-
                 dialog.dismiss();
-
             }
         });
 
@@ -262,7 +253,6 @@ public class CommentActivity extends BaseActivity {
             public void onClick(View v) {
                 dialog.dismiss();
                 flagDialog(ContentParser.ContentMap.get(contentId).getId());
-
             }
         });
 
@@ -494,7 +484,6 @@ public class CommentActivity extends BaseActivity {
                 showAlert("User Banned Successfully", "OK", null);
             }
         }
-
         @Override
         public void onFailure(Throwable error, String content) {
             super.onFailure(error, content);
@@ -502,8 +491,6 @@ public class CommentActivity extends BaseActivity {
             Log.d("action ClientCall", error + "");
             showToast("Something went wrong.");
         }
-
-
     }
 
 
@@ -518,7 +505,6 @@ public class CommentActivity extends BaseActivity {
             super.onFailure(error, content);
             dismissProgressDialog();
             showToast("Something went wrong.");
-
         }
     }
 
@@ -526,9 +512,7 @@ public class CommentActivity extends BaseActivity {
 
         public void onSuccess(JSONObject data) {
             customToast();
-
         }
-
         @Override
         public void onFailure(Throwable error, String content) {
             super.onFailure(error, content);
@@ -538,12 +522,10 @@ public class CommentActivity extends BaseActivity {
             else
                 showToast("Something went wrong.");
         }
-
     }
 
     private void populateData() {
         if (contentId == null || ContentParser.ContentMap == null) {
-//            showToast("Something went Wrong.");
             finish();
         } else {
             comment = ContentParser.ContentMap.get(contentId);
@@ -559,7 +541,6 @@ public class CommentActivity extends BaseActivity {
             Picasso.with(getApplicationContext()).load(comment.getAuthor().getAvatar()).fit().transform(new RoundedTransformation(90, 0)).into(avatarIv);
             if (comment.getAttachments() != null) {
                 if (comment.getAttachments().size() > 0) {
-
                     final Attachments mAttachments = comment.getAttachments().get(0);
                     if (mAttachments.getType().equals("video")) {
                         if (mAttachments.getThumbnail_url() != null) {
@@ -568,7 +549,6 @@ public class CommentActivity extends BaseActivity {
                                 imageAttachedToCommentIv.setVisibility(View.GONE);
                                 webview.setVisibility(View.VISIBLE);
                                 webview.setWebViewClient(new WebViewClient() {
-
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
                                         super.onPageFinished(view, url);
@@ -606,7 +586,6 @@ public class CommentActivity extends BaseActivity {
                 imageAttachedToCommentIv.setVisibility(View.GONE);
             }
 
-
             if (comment.getVote() != null) {// know helpful value and set color
 
                 if (comment.getVote().size() > 0) {
@@ -633,7 +612,6 @@ public class CommentActivity extends BaseActivity {
                         likeCountTv.setTextColor(Color
                                 .parseColor("#757575"));
                     }
-
                     likeCountTv.setText(comment.getVote().size() + "");
 
                 } else {
@@ -687,7 +665,6 @@ public class CommentActivity extends BaseActivity {
         newReplyLL.setOnClickListener(newReplyLLListener);
         moreIv.setOnClickListener(moreListener);
         likeLL.setOnClickListener(likeListener);
-
     }
 
     private void buildToolBar() {
@@ -717,7 +694,6 @@ public class CommentActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     @Override

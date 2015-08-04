@@ -33,7 +33,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -142,7 +141,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                             commentsArray.add(i + 1, stateBean);
                             mCommentsAdapter.notifyItemInserted(i + 1);
                             flag = 1;
-
                             break;
                         }
                     }
@@ -210,7 +208,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
     }
 
     public class AdminCallback extends JsonHttpResponseHandler {
@@ -234,7 +231,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                     application.putDataInSharedPref(
                             LFSAppConstants.ISMOD, "no");
                 }
-
                 if (!data.isNull("profile")) {
                     JSONObject profile = data.getJSONObject("profile");
 
@@ -244,11 +240,9 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                         adminClintId = profile.getString("id");
                     }
                 }
-
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-
             bootstrapClientCall();
         }
 
@@ -339,7 +333,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                 content.setStreamData(data);
             }
         }
-
         @Override
         public void onFailure(Throwable error, String content) {
             super.onFailure(error, content);
@@ -371,7 +364,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
         private GestureDetector gestureDetector;
         private ClickListener clickListener;
-
         public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
             this.clickListener = clickListener;
             gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -379,7 +371,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                 public boolean onSingleTapUp(MotionEvent e) {
                     return true;
                 }
-
                 @Override
                 public void onLongPress(MotionEvent e) {
                     View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
@@ -392,27 +383,22 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-
             View child = rv.findChildViewUnder(e.getX(), e.getY());
             if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
                 clickListener.onClick(child, rv.getChildPosition(child));
             }
             return false;
         }
-
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
         }
-
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
         }
     }
 
     public static interface ClickListener {
         public void onClick(View view, int position);
-
         public void onLongClick(View view, int position);
     }
 
