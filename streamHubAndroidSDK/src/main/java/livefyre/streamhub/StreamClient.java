@@ -83,45 +83,6 @@ public class StreamClient {
                     e.printStackTrace();
                 }
             }
-
-////            @Override
-//            public void onSuccess(String response) {
-//                handler.onSuccess(response);
-//                try {
-//                    if (response != null) {
-//                        Log.d("Stream Clint Call", "Success" + response);
-//                        JSONObject responseJson = new JSONObject(response);
-//                        String lastEvent;
-//                        if (responseJson.has("data")) {
-//                            lastEvent = responseJson.getJSONObject("data")
-//                                    .getString("maxEventId");
-//
-//                            pollStreamEndpoint(collectionId,
-//                                    lastEvent, handler);
-//                        }
-//                    }
-//                } catch (JSONException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-
-//            @Override
-//            public void onFailure(Throwable error, String content) {
-//                super.onFailure(error, content);
-//                try {
-//                    pollStreamEndpoint(collectionId, eventId, handler);
-//                } catch (IOException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                } catch (JSONException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
         });
     }
 }

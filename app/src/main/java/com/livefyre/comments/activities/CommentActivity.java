@@ -36,7 +36,6 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
@@ -458,23 +457,6 @@ public class CommentActivity extends BaseActivity {
 
     private class actionCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject responce) {
-            Log.d("action ClientCall", "success" + responce);
-            dismissProgressDialog();
-            if (!responce.isNull("data")) {
-                dismissProgressDialog();
-                showAlert("Comment Deleted Successfully", "OK", null);
-            }
-        }
-
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            dismissProgressDialog();
-//            Log.d("action ClientCall", error + "");
-//            showToast("Something went wrong.");
-//        }
-
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
@@ -487,51 +469,16 @@ public class CommentActivity extends BaseActivity {
         }
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
-        }
-
-        @Override
         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
             super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             Log.d("action ClientCall", throwable + "");
             showToast("Something went wrong.");
         }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
     }
 
     private class banActionCallBack extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject responce) {
-            Log.d("action ClientCall", "success" + responce);
-            dismissProgressDialog();
-            if (!responce.isNull("data")) {
-                dismissProgressDialog();
-                showAlert("User Banned Successfully", "OK", null);
-            }
-        }
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            dismissProgressDialog();
-//            Log.d("action ClientCall", error + "");
-//            showToast("Something went wrong.");
-//        }
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
@@ -544,47 +491,17 @@ public class CommentActivity extends BaseActivity {
         }
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
-        }
-
-        @Override
         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
             super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             Log.d("action ClientCall", throwable + "");
             showToast("Something went wrong.");
         }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
     }
 
 
     private class helpfulCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
-            dismissProgressDialog();
-        }
-
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            dismissProgressDialog();
-//            showToast("Something went wrong.");
-//        }
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
@@ -592,56 +509,20 @@ public class CommentActivity extends BaseActivity {
         }
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
-        }
-
-        @Override
         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
             super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             showToast("Something went wrong.");
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
         }
 
     }
 
     private class flagCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
-            customToast();
-        }
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            dismissProgressDialog();
-//            if (error != null)
-//                showToast(error.toString());
-//            else
-//                showToast("Something went wrong.");
-//        }
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
             customToast();
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
         }
 
         @Override
@@ -652,20 +533,6 @@ public class CommentActivity extends BaseActivity {
                 showToast(throwable.toString());
             else
                 showToast("Something went wrong.");
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
         }
 
     }

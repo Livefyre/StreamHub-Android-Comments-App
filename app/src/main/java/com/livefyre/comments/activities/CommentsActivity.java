@@ -34,7 +34,6 @@ import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -214,49 +213,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     public class AdminCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject AdminClintJsonResponseObject) {
-            JSONObject data;
-            application.printLog(true, TAG + "-AdminCallback-onSuccess", AdminClintJsonResponseObject.toString());
-            try {
-                data = AdminClintJsonResponseObject.getJSONObject("data");
-
-                if (!data.isNull("permissions")) {
-                    JSONObject permissions = data.getJSONObject("permissions");
-                    if (!permissions.isNull("moderator_key"))
-                        application.putDataInSharedPref(
-                                LFSAppConstants.ISMOD, "yes");
-                    else {
-                        application.putDataInSharedPref(
-                                LFSAppConstants.ISMOD, "no");
-                    }
-                } else {
-                    application.putDataInSharedPref(
-                            LFSAppConstants.ISMOD, "no");
-                }
-                if (!data.isNull("profile")) {
-                    JSONObject profile = data.getJSONObject("profile");
-
-                    if (!profile.isNull("id")) {
-                        application.putDataInSharedPref(
-                                LFSAppConstants.ID, profile.getString("id"));
-                        adminClintId = profile.getString("id");
-                    }
-                }
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-            bootstrapClientCall();
-        }
-
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            // Log.d("adminClintCall", "Fail");
-//            application.printLog(true, TAG + "-AdminCallback-onFailure", error.toString());
-//
-//            bootstrapClientCall();
-//        }
-
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject AdminClintJsonResponseObject) {
             super.onSuccess(statusCode, headers, AdminClintJsonResponseObject);
@@ -294,30 +250,11 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
         }
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
-        }
-
-        @Override
         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
             super.onFailure(statusCode, headers, responseString, throwable);
             application.printLog(true, TAG + "-AdminCallback-onFailure", throwable.toString());
 
             bootstrapClientCall();
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
         }
 
     }
@@ -351,19 +288,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     private class InitCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(String data) {
-            application.printLog(false, TAG + "-InitCallback-onSuccess", data.toString());
-
-            buildCommentList(data);
-            swipeView.setRefreshing(false);
-        }
-
-//        @Override
-//        public void onFailure(Throwable error, String content) {
-//            super.onFailure(error, content);
-//            application.printLog(true, TAG + "-InitCallback-onFailure", error.toString());
-//        }
-
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
@@ -375,32 +299,12 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
             }catch (Exception e){
                 e.printStackTrace();
             }
-
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            super.onSuccess(statusCode, headers, response);
         }
 
         @Override
         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
             super.onFailure(statusCode, headers, responseString, throwable);
             application.printLog(true, TAG + "-InitCallback-onFailure", throwable.toString());
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            super.onSuccess(statusCode, headers, responseString);
-        }
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-            super.onFailure(statusCode, headers, throwable, errorResponse);
         }
 
     }
@@ -434,12 +338,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
     }
 
     public class StreamCallBack extends AsyncHttpResponseHandler {
-
-        public void onSuccess(String data) {
-            if (data != null) {
-                content.setStreamData(data);
-            }
-        }
 
         @Override
         public void onSuccess(int i, Header[] headers, byte[] bytes) {
