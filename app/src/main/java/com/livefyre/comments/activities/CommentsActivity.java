@@ -33,6 +33,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -246,20 +248,85 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
             bootstrapClientCall();
         }
 
+//        @Override
+//        public void onFailure(Throwable error, String content) {
+//            super.onFailure(error, content);
+//            // Log.d("adminClintCall", "Fail");
+//            application.printLog(true, TAG + "-AdminCallback-onFailure", error.toString());
+//
+//            bootstrapClientCall();
+//        }
+
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
-            // Log.d("adminClintCall", "Fail");
-            application.printLog(true, TAG + "-AdminCallback-onFailure", error.toString());
+        public void onSuccess(int statusCode, Header[] headers, JSONObject AdminClintJsonResponseObject) {
+            super.onSuccess(statusCode, headers, AdminClintJsonResponseObject);
+            JSONObject data;
+            application.printLog(true, TAG + "-AdminCallback-onSuccess", AdminClintJsonResponseObject.toString());
+            try {
+                data = AdminClintJsonResponseObject.getJSONObject("data");
+
+                if (!data.isNull("permissions")) {
+                    JSONObject permissions = data.getJSONObject("permissions");
+                    if (!permissions.isNull("moderator_key"))
+                        application.putDataInSharedPref(
+                                LFSAppConstants.ISMOD, "yes");
+                    else {
+                        application.putDataInSharedPref(
+                                LFSAppConstants.ISMOD, "no");
+                    }
+                } else {
+                    application.putDataInSharedPref(
+                            LFSAppConstants.ISMOD, "no");
+                }
+                if (!data.isNull("profile")) {
+                    JSONObject profile = data.getJSONObject("profile");
+
+                    if (!profile.isNull("id")) {
+                        application.putDataInSharedPref(
+                                LFSAppConstants.ID, profile.getString("id"));
+                        adminClintId = profile.getString("id");
+                    }
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            bootstrapClientCall();
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            super.onSuccess(statusCode, headers, response);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
+            application.printLog(true, TAG + "-AdminCallback-onFailure", throwable.toString());
 
             bootstrapClientCall();
         }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+            super.onSuccess(statusCode, headers, responseString);
+        }
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            super.onFailure(statusCode, headers, throwable, errorResponse);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+            super.onFailure(statusCode, headers, throwable, errorResponse);
+        }
+
     }
 
     void bootstrapClientCall() {
         try {
-            BootstrapClient.getInit(LFSConfig.SITE_ID,
-                    LFSConfig.ARTICLE_ID, new InitCallback());
+             BootstrapClient.getInit(LFSConfig.SITE_ID,
+                    LFSConfig.ARTICLE_ID,
+                    new InitCallback());
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -291,11 +358,51 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
             swipeView.setRefreshing(false);
         }
 
+//        @Override
+//        public void onFailure(Throwable error, String content) {
+//            super.onFailure(error, content);
+//            application.printLog(true, TAG + "-InitCallback-onFailure", error.toString());
+//        }
+
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
-            application.printLog(true, TAG + "-InitCallback-onFailure", error.toString());
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
+            application.printLog(false, TAG + "-InitCallback-onSuccess", response.toString());
+            try{
+                String responseString = response.toString();
+                buildCommentList(responseString);
+                swipeView.setRefreshing(false);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            super.onSuccess(statusCode, headers, response);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
+            application.printLog(true, TAG + "-InitCallback-onFailure", throwable.toString());
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+            super.onSuccess(statusCode, headers, responseString);
+        }
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            super.onFailure(statusCode, headers, throwable, errorResponse);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+            super.onFailure(statusCode, headers, throwable, errorResponse);
+        }
+
     }
 
     void buildCommentList(String data) {
@@ -333,9 +440,18 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                 content.setStreamData(data);
             }
         }
+
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onSuccess(int i, Header[] headers, byte[] bytes) {
+            String response = new String(bytes);
+            if (response != null) {
+                content.setStreamData(response);
+            }
+        }
+
+        @Override
+        public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
         }
     }
 
@@ -359,11 +475,11 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
         }
     };
 
-
     static class RecyclerTouchListener implements OnItemTouchListener {
 
         private GestureDetector gestureDetector;
         private ClickListener clickListener;
+
         public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
             this.clickListener = clickListener;
             gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -371,6 +487,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                 public boolean onSingleTapUp(MotionEvent e) {
                     return true;
                 }
+
                 @Override
                 public void onLongPress(MotionEvent e) {
                     View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
@@ -389,9 +506,11 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
             }
             return false;
         }
+
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
         }
+
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
@@ -399,6 +518,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     public static interface ClickListener {
         public void onClick(View view, int position);
+
         public void onLongClick(View view, int position);
     }
 
