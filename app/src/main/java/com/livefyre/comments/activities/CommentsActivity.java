@@ -27,7 +27,7 @@ import com.livefyre.comments.R;
 import com.livefyre.comments.adapter.CommentsAdapter;
 import com.livefyre.comments.listeners.ContentUpdateListener;
 import com.livefyre.comments.models.Content;
-import com.livefyre.comments.parsers.ContentParser;
+import com.livefyre.comments.ContentHandler;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Bus;
@@ -62,7 +62,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
     CommentsAdapter mCommentsAdapter;
     ImageButton postNewCommentIv;
     ArrayList<Content> commentsArray;
-    ContentParser content;
+    ContentHandler content;
     private SwipeRefreshLayout swipeView;
     LinearLayout notification;
     Bus mBus = application.getBus();
@@ -135,7 +135,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                 for (int m = 0; m < newComments.size(); m++) {
                     int flag = 0;
                     String stateBeanId = newComments.get(m);
-                    Content stateBean = ContentParser.ContentMap.get(stateBeanId);
+                    Content stateBean = ContentHandler.ContentMap.get(stateBeanId);
                     for (int i = 0; i < commentsArray.size(); i++) {
                         Content content = commentsArray.get(i);
                         if (content.getId().equals(stateBean.getParentId())) {
@@ -261,7 +261,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     void bootstrapClientCall() {
         try {
-             BootstrapClient.getInit(LFSConfig.SITE_ID,
+            BootstrapClient.getInit(LFSConfig.SITE_ID,
                     LFSConfig.ARTICLE_ID,
                     new InitCallback());
 
@@ -292,11 +292,11 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             super.onSuccess(statusCode, headers, response);
             application.printLog(false, TAG + "-InitCallback-onSuccess", response.toString());
-            try{
+            try {
                 String responseString = response.toString();
                 buildCommentList(responseString);
                 swipeView.setRefreshing(false);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -311,7 +311,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     void buildCommentList(String data) {
         try {
-            content = new ContentParser(new JSONObject(data), getBaseContext());
+            content = new ContentHandler(new JSONObject(data), getBaseContext());
             content.getContentFromResponse(this);
             commentsArray = content.getDeletedObjects();
             mCommentsAdapter = new CommentsAdapter(this, commentsArray);
@@ -328,7 +328,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
     void streamClintCall() {
         try {
             StreamClient.pollStreamEndpoint(
-                    LFSConfig.COLLECTION_ID, ContentParser.lastEvent,
+                    LFSConfig.COLLECTION_ID, ContentHandler.lastEvent,
                     new StreamCallBack());
         } catch (IOException e) {
             e.printStackTrace();
@@ -479,7 +479,7 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
     public void onDataUpdate(HashSet<String> authorsSet, HashSet<String> statesSet, HashSet<String> annotationsSet, HashSet<String> updates) {
         application.printLog(true, TAG, "" + statesSet);
         for (String stateBeanId : statesSet) {
-            Content stateBean = ContentParser.ContentMap.get(stateBeanId);
+            Content stateBean = ContentHandler.ContentMap.get(stateBeanId);
             if (stateBean.getVisibility().equals("1")) {
 
                 if (isExistComment(stateBeanId)) continue;

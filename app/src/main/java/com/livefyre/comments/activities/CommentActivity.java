@@ -28,7 +28,7 @@ import com.livefyre.comments.RoundedTransformation;
 import com.livefyre.comments.models.Attachments;
 import com.livefyre.comments.models.Content;
 import com.livefyre.comments.models.Vote;
-import com.livefyre.comments.parsers.ContentParser;
+import com.livefyre.comments.ContentHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.otto.Bus;
@@ -97,7 +97,7 @@ public class CommentActivity extends BaseActivity {
                 int HFVal = knowHelpfulValue(
                         application
                                 .getDataFromSharedPrefs(LFSAppConstants.ID, ""),
-                        ContentParser.ContentMap.get(contentId).getVote());
+                        ContentHandler.ContentMap.get(contentId).getVote());
 
 
                 if (HFVal == 1) {
@@ -105,9 +105,9 @@ public class CommentActivity extends BaseActivity {
                     parameters.put("value", "0");
                     parameters.put(LFSConstants.LFSPostUserTokenKey,
                             LFSConfig.USER_TOKEN);
-                    parameters.put("message_id", ContentParser.ContentMap.get(contentId).getId());
+                    parameters.put("message_id", ContentHandler.ContentMap.get(contentId).getId());
 
-                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentMap.get(contentId).getId(),
+                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentHandler.ContentMap.get(contentId).getId(),
                             LFSConfig.USER_TOKEN, LFSActions.VOTE, parameters,
                             new helpfulCallback());
                 } else {
@@ -115,8 +115,8 @@ public class CommentActivity extends BaseActivity {
                     parameters.put("value", "1");
                     parameters.put(LFSConstants.LFSPostUserTokenKey,
                             LFSConfig.USER_TOKEN);
-                    parameters.put("message_id", ContentParser.ContentMap.get(contentId).getId());
-                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentParser.ContentMap.get(contentId).getId(),
+                    parameters.put("message_id", ContentHandler.ContentMap.get(contentId).getId());
+                    WriteClient.postAction(LFSConfig.COLLECTION_ID, ContentHandler.ContentMap.get(contentId).getId(),
                             LFSConfig.USER_TOKEN, LFSActions.VOTE, parameters,
                             new helpfulCallback());
 
@@ -145,7 +145,7 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void moreDialog(final String id, final Boolean isFeatured) {
-        Content mBean = ContentParser.ContentMap.get(contentId);
+        Content mBean = ContentHandler.ContentMap.get(contentId);
 
         final Dialog dialog = new Dialog(this,
                 android.R.style.Theme_Translucent_NoTitleBar);
@@ -212,7 +212,7 @@ public class CommentActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent replyView = new Intent(CommentActivity.this, NewActivity.class);
                 replyView.putExtra("id", id);
-                replyView.putExtra(LFSAppConstants.BODY, ContentParser.ContentMap.get(contentId).getBodyHtml());
+                replyView.putExtra(LFSAppConstants.BODY, ContentHandler.ContentMap.get(contentId).getBodyHtml());
                 replyView.putExtra(LFSAppConstants.PURPOSE, LFSAppConstants.EDIT);
                 replyView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(replyView);
@@ -253,7 +253,7 @@ public class CommentActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                flagDialog(ContentParser.ContentMap.get(contentId).getId());
+                flagDialog(ContentHandler.ContentMap.get(contentId).getId());
             }
         });
 
@@ -285,7 +285,7 @@ public class CommentActivity extends BaseActivity {
                 parameters.put(LFSConstants.LFSPostUserTokenKey,
                         LFSConfig.USER_TOKEN);
                 parameters.put("retroactive", "0");
-                WriteClient.flagAuthor(ContentParser.ContentMap.get(id)
+                WriteClient.flagAuthor(ContentHandler.ContentMap.get(id)
                                 .getAuthorId(), LFSConfig.USER_TOKEN, parameters,
                         new banActionCallBack());
 
@@ -432,7 +432,7 @@ public class CommentActivity extends BaseActivity {
     View.OnClickListener moreListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            moreDialog(ContentParser.ContentMap.get(contentId).getId(), ContentParser.ContentMap.get(contentId).getIsFeatured());
+            moreDialog(ContentHandler.ContentMap.get(contentId).getId(), ContentHandler.ContentMap.get(contentId).getIsFeatured());
         }
     };
 
@@ -441,7 +441,7 @@ public class CommentActivity extends BaseActivity {
         public void onClick(View v) {
             Intent intent = new Intent(CommentActivity.this, NewActivity.class);
             intent.putExtra(LFSAppConstants.PURPOSE, LFSAppConstants.NEW_REPLY);
-            intent.putExtra(LFSAppConstants.ID, ContentParser.ContentMap.get(contentId).getId());
+            intent.putExtra(LFSAppConstants.ID, ContentHandler.ContentMap.get(contentId).getId());
             startActivity(intent);
         }
     };
@@ -538,10 +538,10 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void populateData() {
-        if (contentId == null || ContentParser.ContentMap == null) {
+        if (contentId == null || ContentHandler.ContentMap == null) {
             finish();
         } else {
-            comment = ContentParser.ContentMap.get(contentId);
+            comment = ContentHandler.ContentMap.get(contentId);
             //Author Name
             authorNameTv.setText(comment.getAuthor().getDisplayName());
             //Posted Date

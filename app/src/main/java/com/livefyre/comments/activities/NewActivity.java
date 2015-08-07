@@ -320,9 +320,9 @@ public class NewActivity extends BaseActivity {
     View.OnClickListener attachImageLLListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(LFSConfig.FILEPICKER_API_KEY.length()==0){
+            if (LFSConfig.FILEPICKER_API_KEY.length() == 0) {
                 showToast("Something went wrong.");
-            }else{
+            } else {
                 Intent intent = new Intent(NewActivity.this, FilePicker.class);
                 FilePickerAPI.setKey(LFSConfig.FILEPICKER_API_KEY);
                 startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
@@ -374,7 +374,7 @@ public class NewActivity extends BaseActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     Picasso.with(getBaseContext()).load(imgUrl).fit().into(capturedImage, new ImageLoadCallBack());
                 } catch (Exception e) {
-e.printStackTrace();
+                    e.printStackTrace();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

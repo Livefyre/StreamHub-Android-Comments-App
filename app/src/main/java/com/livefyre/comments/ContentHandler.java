@@ -1,4 +1,4 @@
-package com.livefyre.comments.parsers;
+package com.livefyre.comments;
 
 import android.content.Context;
 import android.util.Log;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class ContentParser {
+public class ContentHandler {
 
     private JSONObject jsonResponseObject;
     private static HashMap<String, AuthorsBean> authorsCollection;
@@ -35,7 +35,7 @@ public class ContentParser {
     static Context mContext;
     ArrayList<Content> parentsList;
 
-    public ContentParser(JSONObject jsonResponseObject, Context mContext) {
+    public ContentHandler(JSONObject jsonResponseObject, Context mContext) {
         this.jsonResponseObject = jsonResponseObject;
         this.mContext = mContext;
     }
@@ -428,7 +428,6 @@ public class ContentParser {
                             statesMap.put(key, states.getJSONObject(key));
                             statesSet.add(key);
                             updateSet.add(key);
-
                         } catch (JSONException e) {
 
                             e.printStackTrace();
@@ -478,7 +477,6 @@ public class ContentParser {
                 handleAddedAnnotations(contentId, added);
                 handleAddedAnnotations(contentId, updated);
                 handleRemovedAnnotations(contentId, removed);
-
                 // Get Existed Content from collection of contents
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -577,7 +575,6 @@ public class ContentParser {
                         if (existedVotes.get(i).getValue().equals("1"))
                             count++;
                     }
-
                     contentbean.setHelpfulcount(count);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -617,10 +614,7 @@ public class ContentParser {
                                     newBean.setParentPath(parentPathID);
                                 }
                             newBean.setParentPath(parentBean.getId());
-
                         }
-
-
                         Log.d("Parents", "" + newBean.getParentPath());
                         List<String> list;
                         if (parentBean.getChildPath() != null) {
@@ -635,7 +629,6 @@ public class ContentParser {
                         } else {
                             list = new ArrayList();
                             list.add(newBean.getId());
-//                            newBean.setChildPath(newBean.getId());
                         }
                     } else {
                         newBean = processedContentObject(mainContent, newBean);
