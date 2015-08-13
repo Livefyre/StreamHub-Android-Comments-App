@@ -26,6 +26,7 @@ import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,19 +53,6 @@ public class NewActivity extends BaseActivity {
     //id-selected comment Id Used for editing and new reply
     String imgUrl, purpose, id, body;
     boolean isEdit;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_activity);
-        pullViews();
-
-        getDataFromIntent();
-
-        setListenersToViews();
-
-        setListenersToViewsAndSetConfig();
-    }
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
@@ -198,19 +186,20 @@ public class NewActivity extends BaseActivity {
     //New Comment
     public class writeclientCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
             dismissProgressDialog();
             showAlert("Comment Posted Successfully.", "OK", null);
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
-            Log.d("data error", "" + content);
-
+            Log.d("data error", "" + responseString);
             try {
-                JSONObject errorJson = new JSONObject(content);
+                JSONObject errorJson = new JSONObject(responseString);
                 if (!errorJson.isNull("msg")) {
 
                     showAlert(errorJson.getString("msg"), "TRY AGAIN", tryAgain);
@@ -220,16 +209,16 @@ public class NewActivity extends BaseActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
                 showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
-
             }
-
         }
     }
 
     //New Reply
     public class newReplyCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
             dismissProgressDialog();
             showAlert("Reply Posted Successfully.", "OK", null);
             Intent returnIntent = new Intent();
@@ -238,14 +227,13 @@ public class NewActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             try {
-                JSONObject errorJson = new JSONObject(content);
+                JSONObject errorJson = new JSONObject(responseString);
                 if (!errorJson.isNull("msg")) {
                     showAlert(errorJson.getString("msg"), "TRY AGAIN", tryAgain);
-
                 } else {
                     showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
                 }
@@ -261,20 +249,21 @@ public class NewActivity extends BaseActivity {
     // Edit Comment
     private class editCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
             dismissProgressDialog();
             showAlert("Reply Edited Successfully.", "OK", null);
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             try {
-                JSONObject errorJson = new JSONObject(content);
+                JSONObject errorJson = new JSONObject(responseString);
                 if (!errorJson.isNull("msg")) {
                     showAlert(errorJson.getString("msg"), "TRY AGAIN", tryAgain);
-
                 } else {
                     showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
                 }
@@ -283,7 +272,6 @@ public class NewActivity extends BaseActivity {
                 showAlert("Something went wrong.", "TRY AGAIN", tryAgain);
             }
         }
-
     }
 
     // Listeners
@@ -333,9 +321,9 @@ public class NewActivity extends BaseActivity {
     View.OnClickListener attachImageLLListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(LFSConfig.FILEPICKER_API_KEY.length()==0){
+            if (LFSConfig.FILEPICKER_API_KEY.length() == 0) {
                 showToast("Something went wrong.");
-            }else{
+            } else {
                 Intent intent = new Intent(NewActivity.this, FilePicker.class);
                 FilePickerAPI.setKey(LFSConfig.FILEPICKER_API_KEY);
                 startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
@@ -387,7 +375,7 @@ public class NewActivity extends BaseActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     Picasso.with(getBaseContext()).load(imgUrl).fit().into(capturedImage, new ImageLoadCallBack());
                 } catch (Exception e) {
-e.printStackTrace();
+                    e.printStackTrace();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -408,5 +396,18 @@ e.printStackTrace();
         public void onError() {
             //Hide
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.new_activity);
+        pullViews();
+
+        getDataFromIntent();
+
+        setListenersToViews();
+
+        setListenersToViewsAndSetConfig();
     }
 }
