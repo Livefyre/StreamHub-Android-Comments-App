@@ -36,6 +36,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
@@ -48,35 +49,18 @@ import livefyre.streamhub.LFSFlag;
 import livefyre.streamhub.WriteClient;
 
 public class CommentActivity extends BaseActivity {
-    Toolbar toolbar;
-    TextView authorNameTv, postedDateOrTime, commentBody, moderatorTv, likesTv, likeCountTv, likesFullTv;
+    private Toolbar toolbar;
+    private TextView authorNameTv, postedDateOrTime, commentBody, moderatorTv, likesTv, likeCountTv, likesFullTv;
 
-    LinearLayout featureLL, likeLL, newReplyLL;
+    private LinearLayout featureLL, likeLL, newReplyLL;
 
-    ImageView avatarIv, imageAttachedToCommentIv, moreIv, likeIv;
-    WebView webview;
+    private ImageView avatarIv, imageAttachedToCommentIv, moreIv, likeIv;
+    private WebView webview;
 
     private String contentId;
-    Content comment;
+    private Content comment;
     Bus mBus = application.getBus();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBus.register(this);
-
-        setContentView(R.layout.comment_activity);
-
-        getDataFromIntent();
-
-        pullViews();
-
-        populateData();
-
-        setListenersToViews();
-
-        buildToolBar();
-    }
 
     @Subscribe
     public void getUpdates(HashSet<String> updatesSet) {
@@ -465,41 +449,44 @@ public class CommentActivity extends BaseActivity {
 
     private class actionCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject responce) {
-            Log.d("action ClientCall", "success" + responce);
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
+            Log.d("action ClientCall", "success" + response);
             dismissProgressDialog();
-            if (!responce.isNull("data")) {
+            if (!response.isNull("data")) {
                 dismissProgressDialog();
                 showAlert("Comment Deleted Successfully", "OK", null);
             }
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
-            Log.d("action ClientCall", error + "");
+            Log.d("action ClientCall", throwable + "");
             showToast("Something went wrong.");
         }
-
     }
 
     private class banActionCallBack extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject responce) {
-            Log.d("action ClientCall", "success" + responce);
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
+            Log.d("action ClientCall", "success" + response);
             dismissProgressDialog();
-            if (!responce.isNull("data")) {
+            if (!response.isNull("data")) {
                 dismissProgressDialog();
                 showAlert("User Banned Successfully", "OK", null);
             }
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
-            Log.d("action ClientCall", error + "");
+            Log.d("action ClientCall", throwable + "");
             showToast("Something went wrong.");
         }
 
@@ -508,33 +495,35 @@ public class CommentActivity extends BaseActivity {
 
     private class helpfulCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
             dismissProgressDialog();
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
             showToast("Something went wrong.");
-
         }
 
     }
 
     private class flagCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject data) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
             customToast();
-
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
             dismissProgressDialog();
-            if (error != null)
-                showToast(error.toString());
+            if (throwable != null)
+                showToast(throwable.toString());
             else
                 showToast("Something went wrong.");
         }
@@ -542,7 +531,6 @@ public class CommentActivity extends BaseActivity {
 
     private void populateData() {
         if (contentId == null || ContentParser.ContentMap == null) {
-//            showToast("Something went Wrong.");
             finish();
         } else {
             comment = ContentParser.ContentMap.get(contentId);
@@ -604,7 +592,6 @@ public class CommentActivity extends BaseActivity {
             } else {
                 imageAttachedToCommentIv.setVisibility(View.GONE);
             }
-
 
             if (comment.getVote() != null) {// know helpful value and set color
 
@@ -709,6 +696,24 @@ public class CommentActivity extends BaseActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mBus.register(this);
+
+        setContentView(R.layout.comment_activity);
+
+        getDataFromIntent();
+
+        pullViews();
+
+        populateData();
+
+        setListenersToViews();
+
+        buildToolBar();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -716,7 +721,6 @@ public class CommentActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     @Override

@@ -33,6 +33,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,20 +71,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
     private static final int PARENT = 0;
     private static final int CHILD = 1;
     ArrayList<String> newComments;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.comments_activity);
-
-        pullViews();
-
-        setListenersToViews();
-
-        buildToolBar();
-
-        adminClintCall();
-    }
 
     private void setListenersToViews() {
         postNewCommentIv.setOnClickListener(postNewCommentListener);
@@ -215,7 +202,9 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     public class AdminCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(JSONObject AdminClintJsonResponseObject) {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject AdminClintJsonResponseObject) {
+            super.onSuccess(statusCode, headers, AdminClintJsonResponseObject);
             JSONObject data;
             application.printLog(true, TAG + "-AdminCallback-onSuccess", AdminClintJsonResponseObject.toString());
             try {
@@ -234,7 +223,6 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                     application.putDataInSharedPref(
                             LFSAppConstants.ISMOD, "no");
                 }
-
                 if (!data.isNull("profile")) {
                     JSONObject profile = data.getJSONObject("profile");
 
@@ -244,19 +232,16 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
                         adminClintId = profile.getString("id");
                     }
                 }
-
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-
             bootstrapClientCall();
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
-            // Log.d("adminClintCall", "Fail");
-            application.printLog(true, TAG + "-AdminCallback-onFailure", error.toString());
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
+            application.printLog(true, TAG + "-AdminCallback-onFailure", throwable.toString());
 
             bootstrapClientCall();
         }
@@ -291,17 +276,23 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     private class InitCallback extends JsonHttpResponseHandler {
 
-        public void onSuccess(String data) {
-            application.printLog(false, TAG + "-InitCallback-onSuccess", data.toString());
-
-            buildCommentList(data);
-            swipeView.setRefreshing(false);
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            super.onSuccess(statusCode, headers, response);
+            application.printLog(false, TAG + "-InitCallback-onSuccess", response.toString());
+            try {
+                String responseString = response.toString();
+                buildCommentList(responseString);
+                swipeView.setRefreshing(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
-            application.printLog(true, TAG + "-InitCallback-onFailure", error.toString());
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            super.onFailure(statusCode, headers, responseString, throwable);
+            application.printLog(true, TAG + "-InitCallback-onFailure", throwable.toString());
         }
     }
 
@@ -335,15 +326,17 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
 
     public class StreamCallBack extends AsyncHttpResponseHandler {
 
-        public void onSuccess(String data) {
-            if (data != null) {
-                content.setStreamData(data);
+        @Override
+        public void onSuccess(int i, Header[] headers, byte[] bytes) {
+            String response = new String(bytes);
+            if (response != null) {
+                content.setStreamData(response);
             }
         }
 
         @Override
-        public void onFailure(Throwable error, String content) {
-            super.onFailure(error, content);
+        public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
         }
     }
 
@@ -536,4 +529,17 @@ public class CommentsActivity extends BaseActivity implements ContentUpdateListe
             }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.comments_activity);
+
+        pullViews();
+
+        setListenersToViews();
+
+        buildToolBar();
+
+        adminClintCall();
+    }
 }

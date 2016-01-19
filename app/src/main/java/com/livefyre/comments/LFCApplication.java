@@ -4,14 +4,16 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+
 import com.livefyre.comments.activities.SplashActivity;
 import com.squareup.otto.Bus;
+
 import livefyre.streamhub.LivefyreConfig;
 
 public class LFCApplication extends Application {
 
     private SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor;
     Bus mBus;
 
     @Override
@@ -30,7 +32,7 @@ public class LFCApplication extends Application {
     private void init() {
         sharedPreferences = getApplicationContext().getSharedPreferences(
                 LFSAppConstants.SHARED_PREFERENCES, MODE_PRIVATE);
-        mBus=new Bus();
+        mBus = new Bus();
     }
 
     public void putDataInSharedPref(String key, String value) {
@@ -67,7 +69,8 @@ public class LFCApplication extends Application {
         addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
         getApplicationContext().sendBroadcast(addIntent);
     }
-    public  Bus getBus(){
+
+    public Bus getBus() {
         return mBus;
     }
 }
