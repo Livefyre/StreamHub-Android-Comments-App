@@ -3,9 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StreamHub-Android-Comments-App.iml" filepath="$PROJECT_DIR$/StreamHub-Android-Comments-App.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/filePickerSDK/filePickerSDK.iml" filepath="$PROJECT_DIR$/filePickerSDK/filePickerSDK.iml" />
-      <module fileurl="file://$PROJECT_DIR$/streamHubAndroidSDK/streamHubAndroidSDK.iml" filepath="$PROJECT_DIR$/streamHubAndroidSDK/streamHubAndroidSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/streamhub-android-sdk/streamhub-android-sdk.iml" filepath="$PROJECT_DIR$/streamhub-android-sdk/streamhub-android-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/streamhub-comments/streamhub-comments.iml" filepath="$PROJECT_DIR$/streamhub-comments/streamhub-comments.iml" />
     </modules>
   </component>
 </project>
