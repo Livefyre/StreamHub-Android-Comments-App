@@ -598,7 +598,7 @@ public class CommentActivity extends BaseActivity {
                                     int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics());
                                     webview.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
                                     String youtubeId = Util.getYoutubeVideoId(mAttachments.getUrl());
-                                    webview.loadUrl("http://www.youtube.com/embed/" + youtubeId);
+                                    webview.loadUrl("https://www.youtube.com/embed/" + youtubeId);
                                 } else {
                                     webview.loadDataWithBaseURL(mAttachments.getLink(), mAttachments.getHTML(), "text/html", "UTF-8", "");
                                 }
